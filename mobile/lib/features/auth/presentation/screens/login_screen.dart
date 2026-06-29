@@ -24,6 +24,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _submit() async {
+    // Guard against double-submit from keyboard Enter while a request is
+    // already in flight. CheaButton disables its onTap, but onFieldSubmitted
+    // calls _submit() directly and bypasses that check.
+    if (ref.read(authProvider).isLoading) return;
     if (!_form.currentState!.validate()) return;
     final ok = await ref.read(authProvider.notifier)
         .login(_emailCtrl.text.trim(), _passCtrl.text);
@@ -48,15 +52,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 40),
-                // Logo mark
-                Container(
-                  width: 72, height: 72,
-                  decoration: BoxDecoration(
-                    color: AppColors.accentDim,
-                    borderRadius: AppRadius.lg,
-                  ),
-                  child: const Center(
-                    child: Text('⚗️', style: TextStyle(fontSize: 36)),
+                // Logo mark — Material icon avoids Noto font-fallback warnings
+                // that emoji glyphs cause on Flutter Web.
+                const SizedBox.square(
+                  dimension: 72,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: AppColors.accentDim,
+                      borderRadius: AppRadius.lg,
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.science_rounded,
+                        color: AppColors.accent,
+                        size: 36,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 32),

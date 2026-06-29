@@ -30,7 +30,7 @@ class WelcomeCard extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: AppRadius.lg,
-        border: Border.all(color: AppColors.accent.withOpacity(0.2)),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -43,11 +43,25 @@ class WelcomeCard extends StatelessWidget {
                     style: AppTextStyles.bodySmall
                         .copyWith(color: AppColors.textSecondary)),
                 const SizedBox(height: 4),
-                Text('$firstName 👋',
-                    style: AppTextStyles.titleLarge,
-                    overflow: TextOverflow.ellipsis),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        firstName,
+                        style: AppTextStyles.titleLarge,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    const Icon(
+                      Icons.waving_hand_rounded,
+                      color: AppColors.textPrimary,
+                      size: 20,
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 10),
-                _InfoChip(
+                const _InfoChip(
                   icon: Icons.school_outlined,
                   label: 'Chemical Engineering',
                 ),
@@ -111,7 +125,7 @@ class _Avatar extends StatelessWidget {
       height: 72,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: AppColors.accent.withOpacity(0.4), width: 2),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.4), width: 2),
       ),
       child: ClipOval(
         child: avatarUrl != null && avatarUrl!.isNotEmpty

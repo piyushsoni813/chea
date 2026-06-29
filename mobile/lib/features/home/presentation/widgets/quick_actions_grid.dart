@@ -37,7 +37,7 @@ class QuickActionsGrid extends StatelessWidget {
           crossAxisCount: 4,
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          childAspectRatio: 0.82,
+          mainAxisExtent: 96,
         ),
         itemBuilder: (_, i) => _QuickActionCard(
           action: _actions[i],
@@ -102,7 +102,7 @@ class _QuickActionCardState extends State<_QuickActionCard>
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: a.color.withOpacity(0.15),
+                  color: a.color.withValues(alpha: 0.15),
                   borderRadius: AppRadius.sm,
                 ),
                 child: Icon(a.icon, color: a.color, size: 22),
@@ -139,10 +139,10 @@ class QuickActionsGridSkeleton extends StatelessWidget {
           crossAxisCount: 4,
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          childAspectRatio: 0.82,
+          mainAxisExtent: 96,
         ),
         itemBuilder: (_, __) => Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColors.surface,
             borderRadius: AppRadius.md,
           ),

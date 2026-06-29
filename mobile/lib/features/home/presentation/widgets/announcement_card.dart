@@ -71,7 +71,7 @@ class AnnouncementCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: color.withOpacity(0.15),
+                          color: color.withValues(alpha: 0.15),
                           borderRadius: AppRadius.full,
                         ),
                         child: Text(
@@ -150,7 +150,7 @@ class AnnouncementSkeleton extends StatelessWidget {
             (_) => Container(
               margin: const EdgeInsets.only(bottom: 12),
               height: 100,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: AppRadius.lg,
               ),

@@ -1,29 +1,50 @@
-/// All runtime configuration in one place. Switch environments by changing
-/// [activeEnv] at build time or via --dart-define=ENV=production.
+import 'package:flutter/foundation.dart';
+
+/// All runtime configuration in one place.
+///
+/// Development:
+/// - Web            -> localhost
+/// - Android Emulator -> 10.0.2.2
+/// - Windows/Desktop -> localhost
+///
+/// Production:
+/// - https://api.chea.edu
 class AppConfig {
   AppConfig._();
 
-  static const _env = String.fromEnvironment('ENV', defaultValue: 'development');
-
-  static const development = _Config(
-    baseUrl: 'http://10.0.2.2:8000/api/v1', // Android emulator localhost
-    apiVersion: 'v1',
+  static const _env = String.fromEnvironment(
+    'ENV',
+    defaultValue: 'development',
   );
 
-  static const production = _Config(
-    baseUrl: 'https://api.chea.edu/api/v1',
-    apiVersion: 'v1',
-  );
+  static String get baseUrl {
+    if (_env == 'production') {
+      return 'https://api.chea.edu/api/v1';
+    }
 
-  static _Config get active =>
-      _env == 'production' ? production : development;
+    // Development
+    if (kIsWeb) {
+      return 'http://localhost:8000/api/v1';
+    }
 
-  static String get baseUrl    => active.baseUrl;
-  static String get apiVersion => active.apiVersion;
-}
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        // Android Emulator
+        return 'http://10.0.2.2:8000/api/v1';
 
-class _Config {
-  final String baseUrl;
-  final String apiVersion;
-  const _Config({required this.baseUrl, required this.apiVersion});
+      case TargetPlatform.windows:
+      case TargetPlatform.linux:
+      case TargetPlatform.macOS:
+        return 'http://localhost:8000/api/v1';
+
+      case TargetPlatform.iOS:
+        // iOS Simulator
+        return 'http://localhost:8000/api/v1';
+
+      case TargetPlatform.fuchsia:
+        return 'http://localhost:8000/api/v1';
+    }
+  }
+
+  static const apiVersion = 'v1';
 }

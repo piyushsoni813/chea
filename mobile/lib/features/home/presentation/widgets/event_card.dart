@@ -103,70 +103,72 @@ class EventCard extends StatelessWidget {
                     )
                   : _BannerPlaceholder(type: event.type),
             ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Date pill
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: AppColors.accentDim,
-                      borderRadius: AppRadius.full,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Date pill
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: const BoxDecoration(
+                        color: AppColors.accentDim,
+                        borderRadius: AppRadius.full,
+                      ),
+                      child: Text(
+                        '${dt.day} ${months[dt.month - 1]} · ${_time(dt)}',
+                        style: AppTextStyles.labelSmall
+                            .copyWith(color: AppColors.accent),
+                      ),
                     ),
-                    child: Text(
-                      '${dt.day} ${months[dt.month - 1]} · ${_time(dt)}',
-                      style: AppTextStyles.labelSmall
-                          .copyWith(color: AppColors.accent),
+                    const SizedBox(height: 7),
+                    Text(
+                      event.title,
+                      style: AppTextStyles.titleSmall,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  const SizedBox(height: 7),
-                  Text(
-                    event.title,
-                    style: AppTextStyles.titleSmall,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (event.venue != null) ...[
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on_outlined,
-                            size: 12, color: AppColors.textMuted),
-                        const SizedBox(width: 3),
-                        Expanded(
-                          child: Text(
-                            event.venue!,
-                            style: AppTextStyles.caption,
-                            overflow: TextOverflow.ellipsis,
+                    if (event.venue != null) ...[
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on_outlined,
+                              size: 12, color: AppColors.textMuted),
+                          const SizedBox(width: 3),
+                          Expanded(
+                            child: Text(
+                              event.venue!,
+                              style: AppTextStyles.caption,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                        ),
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (event.isUpcoming)
+                          _CountdownText(target: event.startsAt),
+                        if (event.registrationOpen)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: AppColors.success.withValues(alpha: 0.15),
+                              borderRadius: AppRadius.full,
+                            ),
+                            child: Text('Open',
+                                style: AppTextStyles.labelSmall
+                                    .copyWith(color: AppColors.success)),
+                          ),
                       ],
                     ),
                   ],
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (event.isUpcoming)
-                        _CountdownText(target: event.startsAt),
-                      if (event.registrationOpen)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: AppColors.success.withOpacity(0.15),
-                            borderRadius: AppRadius.full,
-                          ),
-                          child: Text('Open',
-                              style: AppTextStyles.labelSmall
-                                  .copyWith(color: AppColors.success)),
-                        ),
-                    ],
-                  ),
-                ],
+                ),
               ),
             ),
           ],
@@ -201,7 +203,7 @@ class _BannerPlaceholder extends StatelessWidget {
     };
     return Container(
       color: AppColors.surfaceHigh,
-      child: Center(child: Icon(icon, size: 42, color: color.withOpacity(0.6))),
+      child: Center(child: Icon(icon, size: 42, color: color.withValues(alpha: 0.6))),
     );
   }
 }
@@ -225,7 +227,7 @@ class EventsSection extends StatelessWidget {
         child: Container(
           height: 100,
           alignment: Alignment.center,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColors.surface,
             borderRadius: AppRadius.lg,
           ),
@@ -236,7 +238,7 @@ class EventsSection extends StatelessWidget {
       );
     }
     return SizedBox(
-      height: 258,
+      height: 302,
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         scrollDirection: Axis.horizontal,
@@ -258,7 +260,7 @@ class EventsSectionSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 258,
+      height: 302,
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         scrollDirection: Axis.horizontal,
@@ -269,7 +271,7 @@ class EventsSectionSkeleton extends StatelessWidget {
           highlightColor: AppColors.surfaceHigh,
           child: Container(
             width: 240,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.surface,
               borderRadius: AppRadius.lg,
             ),

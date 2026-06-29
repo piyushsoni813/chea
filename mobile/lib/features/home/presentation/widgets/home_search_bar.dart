@@ -41,13 +41,26 @@ class HomeSearchBar extends StatelessWidget {
                       horizontal: 10, vertical: 8),
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: AppColors.accentDim,
                     borderRadius: AppRadius.xs,
                   ),
-                  child: Text('⌘ K',
-                      style: AppTextStyles.labelSmall
-                          .copyWith(color: AppColors.accent)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.keyboard_rounded,
+                        size: 12,
+                        color: AppColors.accent,
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        'K',
+                        style: AppTextStyles.labelSmall
+                            .copyWith(color: AppColors.accent),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

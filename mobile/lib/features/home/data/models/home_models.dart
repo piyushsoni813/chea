@@ -74,7 +74,9 @@ class EventSummaryModel extends EventSummary {
       type:              j['type']              as String,
       bannerUrl:         j['banner_url']        as String?,
       venue:             j['venue']             as String?,
-      startsAt:          DateTime.parse(j['starts_at'] as String),
+      // tryParse + fallback: DateTime.parse throws FormatException on bad input
+      // and TypeError on null; either would crash the entire Future.wait batch.
+      startsAt: DateTime.tryParse(j['starts_at']?.toString() ?? '') ?? DateTime.now(),
       endsAt:            j['ends_at'] != null
           ? DateTime.tryParse(j['ends_at'] as String)
           : null,

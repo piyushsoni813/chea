@@ -58,47 +58,49 @@ class PublicationCard extends StatelessWidget {
                   : _PlaceholderCover(meta: meta),
             ),
 
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    publication.title,
-                    style: AppTextStyles.labelMedium,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    publication.academicYear,
-                    style: AppTextStyles.caption,
-                  ),
-                  const SizedBox(height: 10),
-                  // Open PDF button
-                  GestureDetector(
-                    onTap: () => _openPdf(publication.pdfUrl),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 7),
-                      decoration: BoxDecoration(
-                        color: AppColors.accentDim,
-                        borderRadius: AppRadius.sm,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.picture_as_pdf_rounded,
-                              size: 13, color: AppColors.accent),
-                          const SizedBox(width: 4),
-                          Text('Open PDF',
-                              style: AppTextStyles.labelSmall
-                                  .copyWith(color: AppColors.accent)),
-                        ],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      publication.title,
+                      style: AppTextStyles.labelMedium,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      publication.academicYear,
+                      style: AppTextStyles.caption,
+                    ),
+                    const SizedBox(height: 10),
+                    // Open PDF button
+                    GestureDetector(
+                      onTap: () => _openPdf(publication.pdfUrl),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 7),
+                        decoration: const BoxDecoration(
+                          color: AppColors.accentDim,
+                          borderRadius: AppRadius.sm,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.picture_as_pdf_rounded,
+                                size: 13, color: AppColors.accent),
+                            const SizedBox(width: 4),
+                            Text('Open PDF',
+                                style: AppTextStyles.labelSmall
+                                    .copyWith(color: AppColors.accent)),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
@@ -124,7 +126,7 @@ class _PlaceholderCover extends StatelessWidget {
     return Container(
       color: AppColors.surfaceHigh,
       child: Center(
-        child: Icon(meta.icon, size: 40, color: meta.color.withOpacity(0.5)),
+        child: Icon(meta.icon, size: 40, color: meta.color.withValues(alpha: 0.5)),
       ),
     );
   }
@@ -149,7 +151,7 @@ class PublicationsSection extends StatelessWidget {
         child: Container(
           height: 80,
           alignment: Alignment.center,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColors.surface,
             borderRadius: AppRadius.lg,
           ),
@@ -160,7 +162,7 @@ class PublicationsSection extends StatelessWidget {
       );
     }
     return SizedBox(
-      height: 272,
+      height: 291,
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         scrollDirection: Axis.horizontal,
@@ -182,7 +184,7 @@ class PublicationsSectionSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 272,
+      height: 291,
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         scrollDirection: Axis.horizontal,
@@ -193,7 +195,7 @@ class PublicationsSectionSkeleton extends StatelessWidget {
           highlightColor: AppColors.surfaceHigh,
           child: Container(
             width: 150,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.surface,
               borderRadius: AppRadius.lg,
             ),

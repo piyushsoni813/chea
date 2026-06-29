@@ -56,7 +56,7 @@ class FeaturedBlogCard extends StatelessWidget {
                             end: Alignment.bottomCenter,
                             colors: [
                               Colors.transparent,
-                              AppColors.surface.withOpacity(0.8),
+                              AppColors.surface.withValues(alpha: 0.8),
                             ],
                             stops: const [0.4, 1.0],
                           ),
@@ -70,13 +70,26 @@ class FeaturedBlogCard extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: AppColors.accent,
                           borderRadius: AppRadius.full,
                         ),
-                        child: Text('⭐ Featured',
-                            style: AppTextStyles.labelSmall
-                                .copyWith(color: Colors.white)),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.star_rounded,
+                              size: 11,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Featured',
+                              style: AppTextStyles.labelSmall
+                                  .copyWith(color: Colors.white),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -208,7 +221,7 @@ class FeaturedBlogSkeleton extends StatelessWidget {
       child: Container(
         height: 320,
         margin: const EdgeInsets.symmetric(horizontal: 20),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: AppColors.surface,
           borderRadius: AppRadius.lg,
         ),

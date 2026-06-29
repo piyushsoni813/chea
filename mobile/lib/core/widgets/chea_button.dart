@@ -65,7 +65,7 @@ class CheaButton extends StatelessWidget {
         child: InkWell(
           onTap: isLoading ? null : onPressed,
           borderRadius: const BorderRadius.all(Radius.circular(16)),
-          splashColor: fg.withOpacity(0.1),
+          splashColor: fg.withValues(alpha: 0.1),
           child: Center(child: child),
         ),
       ),

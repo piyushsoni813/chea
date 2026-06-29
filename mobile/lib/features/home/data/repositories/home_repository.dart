@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../../domain/entities/home_entities.dart';
 import '../datasources/home_remote_datasource.dart';
@@ -31,14 +30,17 @@ class HomeRepository {
     }
 
     // Fetch fresh data.
+    // Each endpoint is wrapped in _safe() so a single failure (network hiccup,
+    // JSON parse error, server 5xx) returns an empty fallback instead of
+    // cancelling the entire Future.wait and blanking the home screen.
     try {
       final results = await Future.wait([
-        _remote.fetchAnnouncements(),
-        _remote.fetchFeaturedBlog(),
-        _remote.fetchUpcomingEvents(),
-        _remote.fetchLatestOpportunities(),
-        _remote.fetchLatestPublications(),
-        _remote.fetchUnreadCount(),
+        _safe<List<ArticleSummary>>(  _remote.fetchAnnouncements(),        const []),
+        _safe<ArticleSummary?>(       _remote.fetchFeaturedBlog(),         null),
+        _safe<List<EventSummary>>(    _remote.fetchUpcomingEvents(),       const []),
+        _safe<List<OpportunitySummary>>(_remote.fetchLatestOpportunities(),const []),
+        _safe<List<PublicationSummary>>(_remote.fetchLatestPublications(), const []),
+        _safe<int>(                   _remote.fetchUnreadCount(),          0),
       ]);
 
       final announcements  = results[0]  as List<ArticleSummary>;
@@ -141,6 +143,16 @@ class HomeRepository {
     'pdf_url': p.pdfUrl, 'download_count': p.downloadCount,
     'published_at': p.publishedAt?.toIso8601String(),
   };
+
+  /// Runs [future] and returns [fallback] on any error so that a single
+  /// failing endpoint does not cancel the entire Future.wait batch.
+  static Future<T> _safe<T>(Future<T> future, T fallback) async {
+    try {
+      return await future;
+    } catch (_) {
+      return fallback;
+    }
+  }
 
   Failure _mapDioError(DioException e) {
     if (e.type == DioExceptionType.connectionError ||

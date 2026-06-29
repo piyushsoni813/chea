@@ -38,25 +38,25 @@ class SkeletonCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppColors.surface,
         borderRadius: AppRadius.lg,
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SkeletonBox(height: 180, borderRadius: AppRadius.md),
-          const SizedBox(height: 12),
-          const SkeletonBox(width: 80, height: 12),
-          const SizedBox(height: 8),
-          const SkeletonBox(height: 20),
-          const SizedBox(height: 6),
-          const SkeletonBox(height: 16, width: 200),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
+          SkeletonBox(width: 80, height: 12),
+          SizedBox(height: 8),
+          SkeletonBox(height: 20),
+          SizedBox(height: 6),
+          SkeletonBox(height: 16, width: 200),
+          SizedBox(height: 12),
           Row(children: [
-            const SkeletonBox(width: 60, height: 12),
-            const SizedBox(width: 12),
-            const SkeletonBox(width: 80, height: 12),
+            SkeletonBox(width: 60, height: 12),
+            SizedBox(width: 12),
+            SkeletonBox(width: 80, height: 12),
           ]),
         ],
       ),
@@ -87,11 +87,11 @@ class SkeletonListTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(width: 140, height: 14,
-                      decoration: BoxDecoration(color: AppColors.surface,
+                      decoration: const BoxDecoration(color: AppColors.surface,
                           borderRadius: AppRadius.xs)),
                   const SizedBox(height: 6),
                   Container(width: 200, height: 11,
-                      decoration: BoxDecoration(color: AppColors.surface,
+                      decoration: const BoxDecoration(color: AppColors.surface,
                           borderRadius: AppRadius.xs)),
                 ],
               ),

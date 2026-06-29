@@ -76,7 +76,7 @@ class OpportunityCard extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: meta.color.withOpacity(0.15),
+                    color: meta.color.withValues(alpha: 0.15),
                     borderRadius: AppRadius.sm,
                   ),
                   child: Icon(meta.icon, color: meta.color, size: 22),
@@ -108,7 +108,7 @@ class OpportunityCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: meta.color.withOpacity(0.15),
+                    color: meta.color.withValues(alpha: 0.15),
                     borderRadius: AppRadius.full,
                   ),
                   child: Text(meta.label,
@@ -126,11 +126,14 @@ class OpportunityCard extends StatelessWidget {
                   const Icon(Icons.location_on_outlined,
                       size: 13, color: AppColors.textMuted),
                   const SizedBox(width: 3),
-                  Text(
-                    opportunity.isRemote
-                        ? 'Remote'
-                        : opportunity.location!,
-                    style: AppTextStyles.caption,
+                  Flexible(
+                    child: Text(
+                      opportunity.isRemote
+                          ? 'Remote'
+                          : opportunity.location!,
+                      style: AppTextStyles.caption,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   const SizedBox(width: 12),
                 ],
@@ -149,7 +152,7 @@ class OpportunityCard extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: AppColors.accent,
                         borderRadius: AppRadius.sm,
                       ),
@@ -191,7 +194,7 @@ class OpportunitySectionSkeleton extends StatelessWidget {
             (_) => Container(
               margin: const EdgeInsets.only(bottom: 12),
               height: 100,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: AppRadius.lg,
               ),

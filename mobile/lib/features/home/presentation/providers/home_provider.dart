@@ -8,7 +8,9 @@ import '../../../../core/errors/failures.dart';
 
 // ── Infrastructure providers ──────────────────────────────────────────────────
 final homeRemoteDatasourceProvider = Provider<HomeRemoteDatasource>((ref) {
-  return HomeRemoteDatasource(ref.read(dioClientProvider).dio);
+  // ref.watch: establishes a dependency so this provider rebuilds if
+  // dioClientProvider is ever invalidated (e.g. in tests or after logout).
+  return HomeRemoteDatasource(ref.watch(dioClientProvider).dio);
 });
 
 final homeLocalDatasourceProvider = Provider<HomeLocalDatasource>((ref) {
@@ -17,8 +19,8 @@ final homeLocalDatasourceProvider = Provider<HomeLocalDatasource>((ref) {
 
 final homeRepositoryProvider = Provider<HomeRepository>((ref) {
   return HomeRepository(
-    ref.read(homeRemoteDatasourceProvider),
-    ref.read(homeLocalDatasourceProvider),
+    ref.watch(homeRemoteDatasourceProvider),
+    ref.watch(homeLocalDatasourceProvider),
   );
 });
 
@@ -67,6 +69,10 @@ class HomeNotifier extends StateNotifier<HomeState> {
   Future<void> load() async {
     state = state.copyWith(status: HomeLoadStatus.loading);
     final result = await _repo.getHomeData();
+    // Guard: provider may have been disposed (autoDispose + redirect to /login)
+    // while getHomeData() was in flight. Writing state on a disposed notifier
+    // throws "Bad state: Tried to use HomeNotifier after dispose was called."
+    if (!mounted) return;
     if (result.isSuccess) {
       state = state.copyWith(
           status: HomeLoadStatus.success,
@@ -84,6 +90,7 @@ class HomeNotifier extends StateNotifier<HomeState> {
     if (state.isRefreshing) return;
     state = state.copyWith(isRefreshing: true, clearFailure: true);
     final result = await _repo.getHomeData(forceRefresh: true);
+    if (!mounted) return;
     if (result.isSuccess) {
       state = state.copyWith(
           status:       HomeLoadStatus.success,
@@ -99,11 +106,14 @@ class HomeNotifier extends StateNotifier<HomeState> {
   }
 }
 
-final homeProvider = StateNotifierProvider<HomeNotifier, HomeState>((ref) {
+// autoDispose: provider is destroyed when HomeScreen leaves the widget tree
+// (e.g. redirect to /login), so load() runs fresh on the next authentication.
+final homeProvider = StateNotifierProvider.autoDispose<HomeNotifier, HomeState>((ref) {
   return HomeNotifier(ref.read(homeRepositoryProvider));
 });
 
 // ── Convenience selectors ─────────────────────────────────────────────────────
-final unreadCountProvider = Provider<int>((ref) {
+// autoDispose required: a non-autoDispose provider cannot watch an autoDispose one.
+final unreadCountProvider = Provider.autoDispose<int>((ref) {
   return ref.watch(homeProvider).data?.unreadNotifications ?? 0;
 });

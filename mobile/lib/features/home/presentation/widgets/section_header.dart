@@ -17,24 +17,38 @@ class SectionHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: AppTextStyles.titleSmall),
-          if (onSeeAll != null)
-            GestureDetector(
+          Expanded(
+            child: Text(
+              title,
+              style: AppTextStyles.titleSmall,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (onSeeAll != null) ...[
+            const SizedBox(width: 12),
+            InkWell(
               onTap: onSeeAll,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('See all',
-                      style: AppTextStyles.labelMedium
-                          .copyWith(color: AppColors.accent)),
+                  Text(
+                    'See all',
+                    style: AppTextStyles.labelMedium.copyWith(
+                      color: AppColors.accent,
+                    ),
+                  ),
                   const SizedBox(width: 2),
-                  const Icon(Icons.arrow_forward_ios_rounded,
-                      size: 11, color: AppColors.accent),
+                  const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 11,
+                    color: AppColors.accent,
+                  ),
                 ],
               ),
             ),
+          ],
         ],
       ),
     );

@@ -135,21 +135,21 @@ ThemeData buildAppTheme() {
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: AppColors.surface,
-      border: OutlineInputBorder(
+      border: const OutlineInputBorder(
         borderRadius: AppRadius.md,
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: AppColors.border),
       ),
-      enabledBorder: OutlineInputBorder(
+      enabledBorder: const OutlineInputBorder(
         borderRadius: AppRadius.md,
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: AppColors.border),
       ),
-      focusedBorder: OutlineInputBorder(
+      focusedBorder: const OutlineInputBorder(
         borderRadius: AppRadius.md,
-        borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
+        borderSide: BorderSide(color: AppColors.accent, width: 1.5),
       ),
-      errorBorder: OutlineInputBorder(
+      errorBorder: const OutlineInputBorder(
         borderRadius: AppRadius.md,
-        borderSide: const BorderSide(color: AppColors.error),
+        borderSide: BorderSide(color: AppColors.error),
       ),
       hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textMuted),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

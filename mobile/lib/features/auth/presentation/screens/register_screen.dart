@@ -28,6 +28,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   Future<void> _submit() async {
+    if (ref.read(authProvider).isLoading) return;
     if (!_form.currentState!.validate()) return;
     final ok = await ref.read(authProvider.notifier).register(
       email:      _emailCtrl.text.trim(),

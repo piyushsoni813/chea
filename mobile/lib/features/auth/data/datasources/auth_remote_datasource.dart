@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../models/auth_models.dart';
 
 class AuthRemoteDatasource {
@@ -38,8 +39,22 @@ class AuthRemoteDatasource {
 
   Future<void> logout() => _dio.post('/auth/logout');
 
-  Future<void> registerDevice(String fcmToken) => _dio.post(
-        '/profile/devices',
-        data: {'fcm_token': fcmToken, 'platform': 'android'},
-      );
+  Future<void> registerDevice(String fcmToken) {
+    // kIsWeb must be checked first — it is a compile-time constant and will
+    // always be true on web regardless of defaultTargetPlatform.
+    final platform = kIsWeb
+        ? 'web'
+        : switch (defaultTargetPlatform) {
+            TargetPlatform.android => 'android',
+            TargetPlatform.iOS     => 'ios',
+            TargetPlatform.windows => 'windows',
+            TargetPlatform.macOS   => 'macos',
+            TargetPlatform.linux   => 'linux',
+            _                      => 'unknown',
+          };
+    return _dio.post(
+      '/profile/devices',
+      data: {'fcm_token': fcmToken, 'platform': platform},
+    );
+  }
 }

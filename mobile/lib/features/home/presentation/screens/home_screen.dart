@@ -132,14 +132,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '⚗️  CHEA',
-                      style: AppTextStyles.titleMedium
-                          .copyWith(color: AppColors.accent),
-                    ),
-                    Text(
-                      'Chemical Engineering',
-                      style: AppTextStyles.caption,
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.science,
+                          color: AppColors.accent,
+                          size: 22,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'CHEA',
+                          style: AppTextStyles.titleMedium.copyWith(
+                            color: AppColors.accent,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -177,7 +185,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   const SizedBox(height: 24),
 
                   // 3. Quick actions
-                  SectionHeader(title: 'Quick Actions'),
+                  const SectionHeader(title: 'Quick Actions'),
                   const SizedBox(height: 14),
                   isLoading
                       ? const QuickActionsGridSkeleton()
@@ -210,7 +218,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           ),
                           const SizedBox(height: 14),
                           if (data!.announcements.isEmpty)
-                            _EmptySection(
+                            const _EmptySection(
                                 icon: Icons.campaign_outlined,
                                 label: 'No announcements')
                           else
@@ -236,7 +244,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           ),
                           const SizedBox(height: 14),
                           data.upcomingEvents.isEmpty
-                              ? _EmptySection(
+                              ? const _EmptySection(
                                   icon: Icons.event_busy_outlined,
                                   label: 'No upcoming events')
                               : EventsSection(
@@ -268,7 +276,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           ),
                           const SizedBox(height: 14),
                           data.latestOpportunities.isEmpty
-                              ? _EmptySection(
+                              ? const _EmptySection(
                                   icon: Icons.work_off_outlined,
                                   label: 'No active opportunities')
                               : Padding(
@@ -294,7 +302,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           ),
                           const SizedBox(height: 14),
                           data.latestPublications.isEmpty
-                              ? _EmptySection(
+                              ? const _EmptySection(
                                   icon: Icons.menu_book_outlined,
                                   label: 'No publications yet')
                               : PublicationsSection(
@@ -309,23 +317,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
                   // ── Skeleton sections (while loading, no data yet) ─────────
                   if (isLoading && !hasData) ...[
-                    SectionHeader(title: 'Announcements'),
+                    const SectionHeader(title: 'Announcements'),
                     const SizedBox(height: 14),
                     const AnnouncementSkeleton(),
                     const SizedBox(height: 28),
-                    SectionHeader(title: 'Upcoming Events'),
+                    const SectionHeader(title: 'Upcoming Events'),
                     const SizedBox(height: 14),
                     const EventsSectionSkeleton(),
                     const SizedBox(height: 28),
-                    SectionHeader(title: 'Featured Blog'),
+                    const SectionHeader(title: 'Featured Blog'),
                     const SizedBox(height: 14),
                     const FeaturedBlogSkeleton(),
                     const SizedBox(height: 28),
-                    SectionHeader(title: 'Latest Opportunities'),
+                    const SectionHeader(title: 'Latest Opportunities'),
                     const SizedBox(height: 14),
                     const OpportunitySectionSkeleton(),
                     const SizedBox(height: 28),
-                    SectionHeader(title: 'Publications'),
+                    const SectionHeader(title: 'Publications'),
                     const SizedBox(height: 14),
                     const PublicationsSectionSkeleton(),
                     const SizedBox(height: 40),
@@ -355,7 +363,7 @@ class _EmptySection extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         height: 72,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: AppColors.surface,
           borderRadius: AppRadius.lg,
         ),

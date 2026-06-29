@@ -1,13 +1,15 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
-import '../../data/models/auth_models.dart';
 import '../../domain/entities/user.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/storage/secure_storage.dart';
 
 // ── Datasource ────────────────────────────────────────────────────────────────
 final authDatasourceProvider = Provider<AuthRemoteDatasource>((ref) {
-  return AuthRemoteDatasource(ref.read(dioClientProvider).dio);
+  // ref.watch: if dioClientProvider is ever invalidated a fresh datasource
+  // is created pointing at the new Dio instance.
+  return AuthRemoteDatasource(ref.watch(dioClientProvider).dio);
 });
 
 // ── Auth state ────────────────────────────────────────────────────────────────
@@ -51,15 +53,23 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> _init() async {
-    final token = await _storage.getAccessToken();
-    if (token == null) {
-      state = state.copyWith(status: AuthStatus.unauthenticated);
-      return;
-    }
     try {
-      final user = await _ds.getMe();
-      state = state.copyWith(status: AuthStatus.authenticated, user: user);
+      final token = await _storage.getAccessToken();
+      if (token == null) {
+        state = state.copyWith(status: AuthStatus.unauthenticated);
+        return;
+      }
+      try {
+        final user = await _ds.getMe();
+        state = state.copyWith(status: AuthStatus.authenticated, user: user);
+      } catch (_) {
+        state = state.copyWith(status: AuthStatus.unauthenticated);
+      }
     } catch (_) {
+      // FlutterSecureStorage can throw PlatformException on Android Keystore
+      // failures (observed on some Android 8/9 devices and after factory reset).
+      // Treat as unauthenticated so the router redirect fires instead of leaving
+      // the app stuck in AuthStatus.unknown indefinitely.
       state = state.copyWith(status: AuthStatus.unauthenticated);
     }
   }
@@ -113,23 +123,42 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = const AuthState(status: AuthStatus.unauthenticated);
   }
 
+  /// Called by the network interceptor when a token refresh fails.
+  ///
+  /// Unlike [logout] this method makes no network call — storage is already
+  /// cleared by the interceptor before this is invoked. It is idempotent:
+  /// if the logout request itself returns 401 and triggers a second call,
+  /// the early return prevents any state change or further side-effects.
+  void sessionExpired() {
+    if (state.status == AuthStatus.unauthenticated) return;
+    state = const AuthState(status: AuthStatus.unauthenticated);
+  }
+
   void clearError() => state = state.copyWith(clearError: true);
 
   String _extractMessage(Object e) {
-    final str = e.toString();
-    if (str.contains('detail')) {
-      final match = RegExp(r'"detail"\s*:\s*"([^"]+)"').firstMatch(str);
-      if (match != null) return match.group(1)!;
+    if (e is DioException) {
+      final data = e.response?.data;
+      if (data is Map) {
+        final detail = data['detail'];
+        if (detail is String && detail.isNotEmpty) return detail;
+      }
     }
     return 'Something went wrong. Please try again.';
   }
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier(
+  final notifier = AuthNotifier(
     ref.read(authDatasourceProvider),
     ref.read(secureStorageProvider),
   );
+  // Wire session-expiry bridge: DioClient cannot import authProvider (circular
+  // import), so we set the callback here. auth_provider.dart already imports
+  // dio_client.dart. The callback is only ever invoked during a live network
+  // request, so authProvider is guaranteed to exist by then.
+  ref.read(dioClientProvider).onSessionExpired = notifier.sessionExpired;
+  return notifier;
 });
 
 // Convenience selector
