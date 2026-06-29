@@ -1,0 +1,59 @@
+# CHEA — full backend stack: Postgres, FastAPI, NGINX.
+# Usage:  cp backend/.env.example .env  &&  docker compose up --build
+# Swagger then lives at http://localhost/docs (via NGINX) or :8000/docs direct.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-chea}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-chea}
+      POSTGRES_DB: ${POSTGRES_DB:-chea}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-chea} -d ${POSTGRES_DB:-chea}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5432:5432"   # exposed for local inspection; drop in production
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: db
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "8000:8000"   # direct access; NGINX also fronts it on :80
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
+    volumes:
+      - ./deploy/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - uploads:/var/www/uploads:ro
+    ports:
+      - "80:80"
+
+volumes:
+  pgdata:
+  uploads:

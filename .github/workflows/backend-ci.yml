@@ -1,0 +1,63 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths: ["backend/**", ".github/workflows/backend-ci.yml"]
+  pull_request:
+    paths: ["backend/**", ".github/workflows/backend-ci.yml"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: chea
+          POSTGRES_PASSWORD: chea
+          POSTGRES_DB: chea_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U chea -d chea_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: chea
+      POSTGRES_PASSWORD: chea
+      POSTGRES_DB: chea_test
+      SECRET_KEY: ci-secret-key
+      PYTHONPATH: .
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Syntax check
+        run: python -m compileall -q app
+
+      - name: Verify migrations apply
+        run: alembic upgrade head
+
+      - name: Run tests
+        run: pytest
