@@ -1,8 +1,25 @@
+# Flutter/Dart
 .dart_tool/
+.packages
 .flutter-plugins
 .flutter-plugins-dependencies
-.packages
+.pub/
 build/
-.env
-google-services.json
-GoogleService-Info.plist
+
+# IDE
+.idea/
+*.iml
+
+# Android
+android/.gradle/
+android/local.properties
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+
+# macOS
+macos/Pods/
+
+# Misc
+.DS_Store
