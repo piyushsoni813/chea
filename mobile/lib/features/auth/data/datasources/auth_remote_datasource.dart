@@ -34,6 +34,7 @@ class AuthRemoteDatasource {
 
   Future<UserModel> getMe() async {
     final r = await _dio.get('/auth/me');
+    debugPrint('[Auth:getMe] raw response data: ${r.data}');
     return UserModel.fromJson(r.data as Map<String, dynamic>);
   }
 

@@ -10,6 +10,13 @@ class SecureStorageService {
   final _store = const FlutterSecureStorage(
     aOptions: AndroidOptions(),
     iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    // flutter_secure_storage_web always encrypts via Web Crypto. If the AES-GCM
+    // key stored in localStorage is corrupted from a previous session,
+    // crypto.subtle.importKey() throws DOMException(OperationError). That
+    // exception is NOT a Dart Exception, so _decryptValue's `on Exception catch`
+    // does not catch it and it propagates to callers. The Dio interceptor now
+    // wraps all _storage reads in try/catch to prevent this from killing
+    // in-flight requests. See _AuthInterceptor.onRequest in dio_client.dart.
   );
 
   Future<void> saveTokens({

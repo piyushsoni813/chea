@@ -5,6 +5,13 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Flutter CLI expects the APK at <project_root>/build/app/outputs/flutter-apk/.
+// On Windows without Developer Mode, the symlink/junction that normally redirects
+// android/app/build → build/app cannot be created. Setting buildDirectory here
+// makes Gradle write directly to the path the Flutter tool checks, bypassing the
+// junction requirement entirely.
+layout.buildDirectory.set(file("../../build/app"))
+
 android {
     namespace = "com.example.chea"
     compileSdk = 36

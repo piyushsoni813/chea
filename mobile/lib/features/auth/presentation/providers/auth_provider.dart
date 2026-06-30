@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../domain/entities/user.dart';
@@ -77,15 +78,30 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<bool> login(String email, String password) async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
+      debugPrint('[Auth:login] step 1 – POST /auth/login');
       final tokens = await _ds.login(email: email, password: password);
+      debugPrint('[Auth:login] step 1 OK – access_token starts: ${tokens.accessToken.substring(0, 16)}…');
+
+      debugPrint('[Auth:login] step 2 – saveTokens');
       await _storage.saveTokens(
           accessToken: tokens.accessToken, refreshToken: tokens.refreshToken);
+      debugPrint('[Auth:login] step 2 OK');
+
+      debugPrint('[Auth:login] step 3 – GET /auth/me');
       final user = await _ds.getMe();
+      debugPrint('[Auth:login] step 3 OK – id=${user.id} role=${user.role}');
+
+      debugPrint('[Auth:login] step 4 – saveRole');
       await _storage.saveRole(user.role);
+      debugPrint('[Auth:login] step 4 OK');
+
       state = state.copyWith(
           status: AuthStatus.authenticated, user: user, isLoading: false);
+      debugPrint('[Auth:login] state → authenticated');
       return true;
-    } catch (e) {
+    } catch (e, st) {
+      debugPrint('[Auth:login] FAILED – ${e.runtimeType}: $e');
+      debugPrint('[Auth:login] stacktrace:\n$st');
       state = state.copyWith(
           error: _extractMessage(e), isLoading: false);
       return false;

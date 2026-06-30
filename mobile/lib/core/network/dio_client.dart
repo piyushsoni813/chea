@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_config.dart';
 import '../storage/secure_storage.dart';
@@ -86,9 +87,19 @@ class _AuthInterceptor extends Interceptor {
       handler.next(options);
       return;
     }
-    final token = await _storage.getAccessToken();
-    if (token != null) {
-      options.headers['Authorization'] = 'Bearer $token';
+    try {
+      final token = await _storage.getAccessToken();
+      if (token != null) {
+        options.headers['Authorization'] = 'Bearer $token';
+      }
+    } catch (e, st) {
+      // flutter_secure_storage on web throws DOMException(OperationError) when
+      // the Web Crypto key in localStorage is absent or corrupted. This is the
+      // original exception Dio would otherwise silently wrap as
+      // DioException [unknown]. Log it, then continue without an auth header —
+      // the server will return 401 and the error interceptor handles the rest.
+      debugPrint('[DioClient:onRequest] storage read failed — '
+          '${e.runtimeType}: $e\n$st');
     }
     handler.next(options);
   }
@@ -120,7 +131,17 @@ class _AuthInterceptor extends Interceptor {
     }
 
     // No refresh token in storage → session is truly expired, nothing to do.
-    final refreshToken = await _storage.getRefreshToken();
+    // Storage read is wrapped because flutter_secure_storage on web can throw
+    // DOMException(OperationError); treat that the same as "no token found".
+    final String? refreshToken;
+    try {
+      refreshToken = await _storage.getRefreshToken();
+    } catch (e) {
+      debugPrint('[DioClient:onError] storage read failed — ${e.runtimeType}: $e');
+      _notifyExpired();
+      handler.next(err);
+      return;
+    }
     if (refreshToken == null) {
       _notifyExpired();
       handler.next(err);
