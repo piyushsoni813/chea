@@ -27,3 +27,9 @@ uploads/
 .DS_Store
 .idea/
 .vscode/
+
+# Uploads & local data - keep the directory structure, ignore its contents.
+uploads/*
+!uploads/.gitkeep
+*.sqlite3
+*.db

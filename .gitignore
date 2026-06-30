@@ -1,0 +1,13 @@
+@"
+# Root-level environment file used by docker-compose (chea/.env).
+# Never commit real secrets - only .env.example is tracked.
+.env
+.env.*
+!.env.example
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+"@ | Out-File -FilePath ".gitignore" -Encoding utf8
